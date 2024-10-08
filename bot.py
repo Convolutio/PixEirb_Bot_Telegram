@@ -3,15 +3,13 @@ from supabase import create_client, Client
 import telebot
 
 url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
 users_email: str = os.environ.get("USER_EMAIL")
 users_password: str = os.environ.get("USER_PASSWORD")
 table_name: str = os.environ.get("TABLE_NAME")
 telegram_token: str = os.environ.get("TELEGRAM_TOKEN")
+service_key : str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
-supabase: Client = create_client(url, key)
-
-user = supabase.auth.sign_in_with_password({ "email": users_email, "password": users_password })
+supabase: Client = create_client(url, service_key)
 
 bot = telebot.TeleBot(telegram_token, parse_mode=None)
 
