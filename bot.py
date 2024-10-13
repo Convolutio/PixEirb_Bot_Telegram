@@ -1,30 +1,34 @@
 import os
 from supabase import create_client, Client
-import telebot
+from telegram import Update
+from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
+from dotenv import load_dotenv
 
-url: str = os.environ.get("SUPABASE_URL")
-users_email: str = os.environ.get("USER_EMAIL")
-users_password: str = os.environ.get("USER_PASSWORD")
-table_name: str = os.environ.get("TABLE_NAME")
-telegram_token: str = os.environ.get("TELEGRAM_TOKEN")
-service_key : str = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="PixiBot à votre service !")
 
-supabase: Client = create_client(url, service_key)
-
-bot = telebot.TeleBot(telegram_token, parse_mode=None)
-
-@bot.message_handler()
-def NewMessage(message):
-    txt = message.text.lower()
-    if message.text == "/start":
-        bot.reply_to(message, "PixiBot à votre service")
-    elif "album" in txt:
+async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    txt = update.message.text.lower()
+    if "album" in txt:
         response = supabase.rpc("get_random_data").execute()
-        bot.reply_to(message, response.data)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=response.data)
     else:
-        bot.reply_to(
-            message,
-            'Veuillez reformuler votre demande afin de contenir le mot-clé album',
-        )
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Veuillez reformuler votre demande afin de contenir le mot-clé album")
+    
+if __name__ == '__main__':
+    load_dotenv()  # take environment variables from .env.
+    supabase_url: str = os.getenv("SUPABASE_URL")
+    service_key : str = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    telegram_token: str = os.getenv("TELEGRAM_TOKEN")
 
-bot.infinity_polling()
+    supabase: Client = create_client(supabase_url, service_key)
+    
+    msg_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler)
+    application = ApplicationBuilder().token(telegram_token).build()
+    
+    start_handler = CommandHandler('start', start)
+    
+    application.add_handler(start_handler)
+    application.add_handler(msg_handler)
+
+    application.run_polling()
