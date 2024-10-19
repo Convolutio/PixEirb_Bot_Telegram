@@ -1,0 +1,17 @@
+services:
+  pocketbase:
+    build: ./pocketbase_app
+    ports:
+      - "8090:8090"
+    env_file:
+      - ./.env
+    volumes:
+      - ./pb_data:/app/pocketbase/pb_data
+
+  telegram_bot:
+    build: ./telegram_bot
+    env_file:
+      - ./.env
+    network_mode : host
+    depends_on:
+      - pocketbase

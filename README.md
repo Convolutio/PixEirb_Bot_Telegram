@@ -1,25 +1,25 @@
-Pour lancer il faut les variable d'environnement suivantes :  
+# PixiBot
 
-- SUPABASE_URL, l'url du projet supabase  
-- TELEGRAM_TOKEN, le token du bot telegram  
-- SUPABASE_SERVICE_ROLE_KEY, la service key de supabase, permet d'avoir accès à toute la database dans la RLS policy et comme ca pas besoin d'un user  
+Le pixibot est le bot qui va répondre n'importe quoi par télégram dès que quelqu'un demande quand sort tel ou tel album.  
 
-Il faut dans supabase faire une database function pour faire une row aléeatoire :
+Il est sous le username @Quand_sort_album_Pixeirb_bot
 
-![Database](./database_function.png)
+## Comment que ca marche sous le capot?
 
-Le code est le suivant : 
+Tout cela toune grâca à Pocketbase, un backend open source.
+
+Ce pocketbase va faire plusieurs choses : 
+- Gérer une base de donnée sqlite
+- Gérer l'authentification avec EirbConnect
+- Hoster un serveur http pour une interface admin
+- Fournir une route /get_random_response qui renvoie une réponse au hasard de la base de donnée (pas besoin d'être authentifié)
+
+Il y a également un bot telegram écrit en python qui profitera de /get_random_response pour répondre aux messages
+
+## Comment Setup tout ca
+
+Au niveau des variables d'environnement, il faut créer un fichier ".env" avec les variables suivantes :
 ```
-create or replace function get_random_data()
-  returns text
-  language sql
-  set search_path = 'public'
-as $$
-  select texte from "Response" order by random() limit 1; 
-$$;
+TELEGRAM_TOKEN=...
+POCKETBASE_URL=...
 ```
-
-Il faut que la table dispose de 2 colonnes :
-
-1. la première pour l'id
-2. la deuxième nommé "texte" qui stoquera du "texte"

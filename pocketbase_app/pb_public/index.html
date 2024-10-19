@@ -1,0 +1,36 @@
+<html lang="fr"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration des Réponses</title>
+<body>
+    <h1>Administration des Réponses</h1>
+
+    <!-- Bouton de déconnexion -->
+    <button id="logoutButton" style="display: none;">Se déconnecter</button>
+
+    <h1>Ajouter des réponses depuis un fichier texte avec une réponse par ligne</h1>
+    <input type="file" id="fileInput">
+    <button id="readFileButton">Lire le fichier</button>
+
+
+    <!-- Formulaire pour ajouter une nouvelle réponse -->
+    <form id="addResponseForm" style="display:none">
+        <label for="newResponse">Nouvelle réponse :</label>
+        <input type="text" id="newResponse" required="">
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <!-- Formulaire pour modifier une réponse -->
+    <form id="editResponseForm" style="display:none">
+        <input type="hidden" id="editResponseId">
+        <label for="editResponse">Modifier la réponse :</label>
+        <input type="text" id="editResponse" required="">
+        <button type="submit">Modifier</button>
+    </form>
+
+    <ul id="responseList"></ul>
+    <script type="module" src="app.js"></script>
+
+    <button id="deleteAllButton" style="display: none;">Se déconnecter</button>
+
+</body>
