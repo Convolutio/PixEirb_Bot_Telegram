@@ -22,7 +22,7 @@ COPY ./pb_public /app/pocketbase/pb_public
 
 
 # Exposer le port pour PocketBase
-ENV POCKETBASE_URL=127.0.0.1:8090
+ENV POCKETBASE_URL=0.0.0.0:8090
 
 EXPOSE 8090
 
