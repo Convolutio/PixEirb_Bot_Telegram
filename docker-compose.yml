@@ -2,7 +2,7 @@ services:
   pocketbase:
     build: ./pocketbase_app
     ports:
-      - "8090:8090"
+      - "${POCKETBASE_PORT}:${POCKETBASE_PORT}"
     env_file:
       - ./.env
     volumes:

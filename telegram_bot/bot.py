@@ -19,7 +19,7 @@ if __name__ == '__main__':
     load_dotenv()  # take environment variables from .env.
 
     telegram_token: str = os.getenv("TELEGRAM_TOKEN")
-    pocketbase_url: str = os.getenv("POCKETBASE_URL")    
+    pocketbase_url: str = os.getenv("POCKETBASE_URL")
     
     msg_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler)
     application = ApplicationBuilder().token(telegram_token).build()

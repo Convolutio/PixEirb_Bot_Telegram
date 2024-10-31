@@ -20,15 +20,11 @@ COPY ./pb_hooks /app/pocketbase/pb_hooks
 
 COPY ./pb_public /app/pocketbase/pb_public
 
-
-# Exposer le port pour PocketBase
-ENV POCKETBASE_URL=0.0.0.0:8090
-
-EXPOSE 8090
+EXPOSE "${POCKETBASE_PORT}"
 
 RUN echo "{\"pocketbaseUrl\": \"${POCKETBASE_URL}\"}" > /app/pocketbase/pb_public/config.json
 
 # Dossier de données pour la base de données SQLite et les fichiers
 VOLUME ["/app/pocketbase/pb_data"]
 
-ENTRYPOINT ["/app/pocketbase/pocketbase", "serve", "--http", "0.0.0.0:8090"]
+ENTRYPOINT ["/app/pocketbase/pocketbase", "serve", "--http", "${POCKETBASE_URL}"]
