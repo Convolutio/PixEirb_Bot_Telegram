@@ -24,8 +24,6 @@ fetch("config.json")
 });
 
 const pb = new PocketBase(pocketbaseUrl);
-auth_and_launch()
-
 
 
 pb.autoCancellation(false);
@@ -188,4 +186,4 @@ document.getElementById("readFileButton").addEventListener(
     },
 );
 
-// window.onload = auth_and_launch;
+window.onload = auth_and_launch;
