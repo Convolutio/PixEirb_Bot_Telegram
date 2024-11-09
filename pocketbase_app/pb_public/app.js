@@ -9,6 +9,9 @@ const editResponseForm = document.getElementById("editResponseForm");
 const responseList = document.getElementById("responseList");
 const deleteAllButton = document.getElementById("deleteAllButton");
 const logoutButton = document.getElementById("logoutButton");
+const fileInput = document.getElementById("fileInput");
+const readFileButton = document.getElementById("readFileButton");
+const forAdminHint = document.getElementById("admin-hint");
 let pocketbaseUrl;
 
 fetch("config.json")
@@ -28,35 +31,61 @@ const pb = new PocketBase(pocketbaseUrl);
 
 pb.autoCancellation(false);
 
-logoutButton.addEventListener("click", () => {
-    pb.authStore.clear(); // Effacer les informations d'authentification
+function clearForm() {
     // Réinitialiser l'interface
     addResponseForm.style.display = "none"; // Cacher le formulaire d'ajout
     editResponseForm.style.display = "none"; // Cacher le formulaire de modification
     deleteAllButton.style.display = "none"; // Cacher le bouton "Tout Supprimer"
     logoutButton.style.display = "none"; // Cacher le bouton de déconnexion
     responseList.innerHTML = ""; // Vider la liste des réponses
+    responseList.style.display = "none";
+    fileInput.style.display = "none";
+    readFileButton.style.display = "none";
+    forAdminHint.style.display = "block";
+}
+
+async function displayForm() {
+    addResponseForm.style.display = "block"; // Afficher le formulaire d'ajout
+    deleteAllButton.style.display = "block"; // Afficher le bouton "Tout Supprimer"
+    logoutButton.style.display = "block"; // Afficher le bouton de déconnexion
+    responseList.style.display = "block";
+    fileInput.style.display = "block";
+    readFileButton.style.display = "block";
+    forAdminHint.style.display = "none";
+    await fetchResponses();
+}
+
+logoutButton.addEventListener("click", () => {
+    pb.authStore.clear(); // Effacer les informations d'authentification
+    clearForm();
 });
 
 async function auth_and_launch() {
-
-
     try {
         await pb.collection("users").authWithOAuth2({ provider: "oidc" });
+        await displayForm();
     } catch (error) {
         if (error.status === 400) {
             alert(
-                "Authentification échoué. Etes vous sur d'avoir les droits ? (Ratio)",
+                "Authentification échouée. Êtes-vous sur d'avoir les droits ? (Ratio)",
             );
         } else {
             console.error("Une autre erreur est survenue", error);
         }
     }
 
-    addResponseForm.style.display = "block"; // Afficher le formulaire d'ajout
-    deleteAllButton.style.display = "block"; // Afficher le bouton "Tout Supprimer"
-    logoutButton.style.display = "block"; // Afficher le bouton de déconnexion
-    await fetchResponses();
+}
+
+async function deleteResponse(recordId, responseListItem) {
+    try {
+        await pb.collection("Response").delete(recordId);
+        responseListItem.remove();
+    } catch (error) {
+        console.error(
+            "Erreur lors de la suppression de la réponse:",
+            error,
+        );
+    }
 }
 
 // Fonction pour récupérer les réponses de la collection "Response"
@@ -80,7 +109,7 @@ async function fetchResponses() {
             // Bouton pour supprimer la réponse
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Supprimer";
-            deleteButton.onclick = () => deleteResponse(record.id);
+            deleteButton.onclick = () => deleteResponse(record.id, listItem);
 
             listItem.appendChild(editButton);
             listItem.appendChild(deleteButton);
@@ -127,6 +156,7 @@ editResponseForm.addEventListener("submit", async (event) => {
     const updatedResponseText = document.getElementById("editResponse").value;
 
     try {
+        // TODO: do not update if the content has not been edited
         await pb.collection("Response").update(responseId, {
             texte: updatedResponseText,
         });
@@ -160,10 +190,9 @@ deleteAllButton.addEventListener("click", async () => {
     }
 });
 
-document.getElementById("readFileButton").addEventListener(
+readFileButton.addEventListener(
     "click",
     function () {
-        const fileInput = document.getElementById("fileInput");
         const file = fileInput.files[0];
 
         if (file) {
