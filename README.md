@@ -7,7 +7,7 @@ Il est sous le username `@Quand_sort_album_Pixeirb_bot`
 
 ## Comment que ca marche sous le capot?
 
-Tout cela toune grâca à Pocketbase, un backend open source.
+Tout cela tourne grâca à Pocketbase, un backend open source.
 
 Ce pocketbase va faire plusieurs choses :
 
@@ -52,12 +52,17 @@ Pour définir le client OpenId Connect relié à EirbConnect, aller dans ce lien
 "http://${POCKETBASE_URL}/_/#/settings/auth-providers"
 ```
 
-Ajouter le `Client Id` et le `Client secret` définis sur EirbConnect.
+Ajouter le `Client Id` et le `Client secret` définis côté EirbConnect.
 Les endpoints à fournir sont obtensibles sur `https://connect.eirb.fr/.well-known/openid-configuration`
+
+#### Côté EirbConnect
+
+*Normalement, la bonne configuration est déjà faite 😊*
 
 Sur EirbConnect, définir pour le client le `Root URL` à la valeur de
 `https://${POCKETBASE_URL}` ou `http://${POCKETBASE_URL}`
 Aussi, activer le *Client authentication* et l'*Authorization*
 
 L'autorisation aux administrateurs de Pixeirb uniquement est déléguée à
-EirbConnect. Configurer donc les bonnes policies sur cette plateforme.
+EirbConnect. Configurer donc les bonnes policies sur cette plateforme et
+ajouter les bonnes personnes dans le groupe des admins Pixibot.
