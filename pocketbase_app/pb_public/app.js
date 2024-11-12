@@ -2,8 +2,6 @@ import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.14.0/dist/pock
 
 // Connecter à l'instance PocketBase (modifie l'URL selon ton cas)
 
-// const pb = new PocketBase(pocketbaseUrl);
-
 const addResponseForm = document.getElementById("addResponseForm");
 const editResponseForm = document.getElementById("editResponseForm");
 const responseList = document.getElementById("responseList");
@@ -12,21 +10,8 @@ const logoutButton = document.getElementById("logoutButton");
 const fileInput = document.getElementById("fileInput");
 const readFileButton = document.getElementById("readFileButton");
 const forAdminHint = document.getElementById("admin-hint");
-let pocketbaseUrl;
 
-fetch("config.json")
-.then((response) => response.json())
-.then((config) => {
-    pocketbaseUrl = config.pocketbaseUrl;
-})
-.catch((error) => {
-    console.error(
-        "Erreur lors de la récupération de l'URL de PocketBase :",
-        error,
-    );
-});
-
-const pb = new PocketBase(pocketbaseUrl);
+const pb = new PocketBase("/");
 
 
 pb.autoCancellation(false);

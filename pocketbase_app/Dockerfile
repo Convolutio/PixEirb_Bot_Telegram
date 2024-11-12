@@ -20,18 +20,10 @@ COPY ./pb_hooks /app/pocketbase/pb_hooks
 
 COPY ./pb_public /app/pocketbase/pb_public
 
-ARG POCKETBASE_PORT
-ARG POCKETBASE_URL
-ENV POCKETBASE_PORT=${POCKETBASE_PORT}
-ENV POCKETBASE_URL=${POCKETBASE_URL}
+EXPOSE 8090
 
-EXPOSE ${POCKETBASE_PORT}
-
-RUN echo ${POCKETBASE_URL}
-
-RUN echo "{\"pocketbaseUrl\": \"${POCKETBASE_URL}\"}" > /app/pocketbase/pb_public/config.json
 
 # Dossier de données pour la base de données SQLite et les fichiers
 VOLUME ["/app/pocketbase/pb_data"]
 
-ENTRYPOINT sh -c "/app/pocketbase/pocketbase serve --http ${POCKETBASE_URL}"
+ENTRYPOINT sh -c "/app/pocketbase/pocketbase serve --http 0.0.0.0:8090"

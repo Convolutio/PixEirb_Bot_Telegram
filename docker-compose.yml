@@ -1,19 +1,16 @@
 services:
   pocketbase:
+    hostname: pocketbase-server
     build:
       context: ./pocketbase_app
-      args:
-        POCKETBASE_PORT: ${POCKETBASE_PORT}
-        POCKETBASE_URL: ${POCKETBASE_URL}
     env_file: ".env"
     ports:
-      - "${POCKETBASE_PORT}:${POCKETBASE_PORT}"
+      - 8090:8090
     volumes:
       - ./pb_data:/app/pocketbase/pb_data
 
   telegram_bot:
     build: ./telegram_bot
     env_file: ".env"
-    network_mode : host
     depends_on:
       - pocketbase
