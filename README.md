@@ -27,8 +27,6 @@ les variables suivantes :
 
 ```sh
 TELEGRAM_TOKEN="<your telegram bot token>"
-POCKETBASE_URL="localhost:8090"
-POCKETBASE_PORT=8090
 ```
 
 Copiez le fichier `.env.example` et remplissez-le en tant que fichier `.env`
