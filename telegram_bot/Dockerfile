@@ -1,5 +1,5 @@
 # Utiliser une image Python comme base
-FROM python:3.12
+FROM python:3.12-alpine
 
 # Créer un répertoire pour l'application
 WORKDIR /app

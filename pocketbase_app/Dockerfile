@@ -26,4 +26,4 @@ EXPOSE 8090
 # Dossier de données pour la base de données SQLite et les fichiers
 VOLUME ["/app/pocketbase/pb_data"]
 
-ENTRYPOINT sh -c "/app/pocketbase/pocketbase serve --http 0.0.0.0:8090"
+ENTRYPOINT sh -c "/app/pocketbase/pocketbase serve --http pocketbase-server:8090"
