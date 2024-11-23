@@ -1,29 +1,29 @@
 FROM alpine:latest
 
-ARG PB_VERSION=0.22.21
+ARG PB_VERSION=0.22.27
 
-RUN  apk add --no-cache \
+RUN apk add --no-cache \
     unzip \
-    git\
     ca-certificates
 
 # download and unzip PocketBase
-WORKDIR /app
 ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
-RUN unzip /tmp/pb.zip -d /app/pocketbase
+# Copy PocketBase's binary in the build stage
+RUN mkdir -p /app/pocketbase
+RUN unzip /tmp/pb.zip -d /app/pocketbase/
 
-# Copier le binaire PocketBase depuis la phase de build
+# add tracked data tables' definitions in the containerized pb app
 COPY ./pb_migrations /app/pocketbase/pb_migrations
 
-# uncomment to copy the local pb_hooks dir into the image
+# add tracked data hooks' definitions in the containerized pb app
 COPY ./pb_hooks /app/pocketbase/pb_hooks
 
+# add tracked static pages in the containerized pb app
 COPY ./pb_public /app/pocketbase/pb_public
 
 EXPOSE 8090
 
-
 # Dossier de données pour la base de données SQLite et les fichiers
 VOLUME ["/app/pocketbase/pb_data"]
 
-ENTRYPOINT sh -c "/app/pocketbase/pocketbase serve --http pocketbase-server:8090"
+CMD ["/app/pocketbase/pocketbase", "serve", "--http=0.0.0.0:8090"]
