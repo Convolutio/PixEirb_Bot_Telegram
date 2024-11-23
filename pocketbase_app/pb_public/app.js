@@ -183,14 +183,12 @@ readFileButton.addEventListener(
         if (file) {
             const reader = new FileReader();
 
-            reader.onload = function (event) {
+            reader.onload = async (event) => {
                 const csvContent = event.target.result;
                 const rows = csvContent.split("\n");
 
-                rows.forEach((row) => {
-                    add_new_response(row);
-                });
-                fetchResponses(); // Mettre à jour la liste après suppression
+                await Promise.all(rows.map((row) => add_new_response(row)));
+                await fetchResponses(); // Mettre à jour la liste après suppression
             };
 
             reader.readAsText(file); // Lire le fichier en tant que texte
