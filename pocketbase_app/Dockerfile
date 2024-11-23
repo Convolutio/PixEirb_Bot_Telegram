@@ -1,29 +1,37 @@
+FROM alpine:latest AS downloader
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG VERSION
+
+ENV BUILDX_ARCH="${TARGETOS:-linux}_${TARGETARCH:-amd64}${TARGETVARIANT}"
+
+
+# Security environment variables
+ENV ADMIN_EMAIL="test@example.org"
+ENV ADMIN_PASSWORD="1234567890"
+ENV PB_ENCRYPTION_KEY="NOT_SAFE_SECRET_KEY"
+
+
+RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
+    && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
+    && chmod +x /pocketbase
+
 FROM alpine:latest
-
-ARG PB_VERSION=0.22.27
-
-RUN apk add --no-cache \
-    unzip \
-    ca-certificates
-
-# download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
-# Copy PocketBase's binary in the build stage
-RUN mkdir -p /app/pocketbase
-RUN unzip /tmp/pb.zip -d /app/pocketbase/
-
-# add tracked data tables' definitions in the containerized pb app
-COPY ./pb_migrations /app/pocketbase/pb_migrations
-
-# add tracked data hooks' definitions in the containerized pb app
-COPY ./pb_hooks /app/pocketbase/pb_hooks
-
-# add tracked static pages in the containerized pb app
-COPY ./pb_public /app/pocketbase/pb_public
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 EXPOSE 8090
 
-# Dossier de données pour la base de données SQLite et les fichiers
-VOLUME ["/app/pocketbase/pb_data"]
+COPY --from=downloader /pocketbase /usr/local/bin/pocketbase
 
-CMD ["/app/pocketbase/pocketbase", "serve", "--http=0.0.0.0:8090"]
+
+# Add tracked data definitions of the pocketbase instance
+COPY ./pb_migrations /pb_migrations
+COPY ./pb_hooks /pb_hooks
+COPY ./pb_public /pb_public
+
+# Setup the starting script
+COPY ./init.sh /usr/local/bin/init.sh
+RUN chmod +x /usr/local/bin/init.sh
+ENTRYPOINT ["/usr/local/bin/init.sh"]

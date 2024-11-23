@@ -1,15 +1,25 @@
 services:
   pocketbase:
     hostname: pocketbase-server
+    container_name: admin-server
     build:
       context: ./pocketbase_app
+      args:
+        - VERSION=0.22.27 # Specify the PocketBase version here
     env_file: ".env"
+    restart: unless-stopped
     ports:
       - 8090:8090
     volumes:
-      - ./pb_data:/app/pocketbase/pb_data
+      - ./pb_data:/pb_data
+    healthcheck: # optional, recommended since v0.10.0
+      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   telegram_bot:
+    container_name: telegram-bot
     build: ./telegram_bot
     env_file: ".env"
     depends_on:
