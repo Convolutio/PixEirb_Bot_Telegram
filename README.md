@@ -1,7 +1,7 @@
 # PixiBot
 
 Le pixibot est le bot qui va répondre n'importe quoi par Telegram dès que
-quelqu'un demande quand sort tel ou tel album.  
+quelqu'un demande quand sort tel ou tel album.
 
 Il est sous le username `@Quand_sort_album_Pixeirb_bot`
 
@@ -20,7 +20,25 @@ la base de donnée (pas besoin d'être authentifié)
 Il y a également un bot telegram écrit en python qui profitera de
 `/get_random_response` pour répondre aux messages
 
-## Comment Setup tout ca
+## Héberger le bot seulement
+
+Si une instance de pocketbase tourne déjà à distance pour servir les phrases de
+Pixibot, alors vous pouvez uniquement mettre en marche le bot telegram avec en
+complétant le `.env` suivant :
+
+```sh
+TELEGRAM_TOKEN="<your telegram bot token>"
+POCKETBASE_URL="https://<your_pocketbase_url>" # e.g. https://pixibot.eirb.fr
+```
+
+Ensuite il suffit d'exécuter le container définit dans
+`docker-compose.remote-bot.yml` :
+
+```sh
+docker compose -f docker-compose.remote-bot.yml up --build
+```
+
+## Héberger la stack complète
 
 Au niveau des variables d'environnement, il faut créer un fichier `.env` avec
 les variables suivantes :
@@ -41,7 +59,7 @@ dossier `pb_data/`.
 Copiez le fichier `.env.example` et remplissez-le en tant que fichier `.env`
 pour une configuration plus rapide.
 
-## Configuration de Pocketbase
+### Configuration de Pocketbase
 
 Le docker compose va utiliser un volume pour que les données restent si le
 docker n'est pas up. Il va créer un dossier `pb_data` à la racine du repo dans
@@ -58,7 +76,7 @@ migrations définies dans `pb_migrations`.
 Le docker pocketbase va être sur le port que vous aurez défini, on peut faire
 une redirection de port en modifiant le docker compose.
 
-### Configuration de l'authentification
+#### Configuration de l'authentification
 
 Pour définir le client OpenId Connect relié à EirbConnect, aller dans ce lien
 
@@ -69,7 +87,7 @@ Pour définir le client OpenId Connect relié à EirbConnect, aller dans ce lien
 Ajouter le `Client Id` et le `Client secret` définis côté EirbConnect.
 Les endpoints à fournir sont obtensibles sur `https://connect.eirb.fr/.well-known/openid-configuration`
 
-#### Côté EirbConnect
+## Côté EirbConnect
 
 Sur EirbConnect, définir pour le client le `Root URL` à la valeur de
 `${POCKETBASE_URL}` ou `${POCKETBASE_URL}`
